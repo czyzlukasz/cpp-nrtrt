@@ -43,11 +43,15 @@ struct Triangle : public IObject{
 
     //TODO: unused for now
     [[nodiscard]] inline bool canCollide(const Ray& ray) const final{
-        return true;
+        return glm::length(glm::cross(ray.direction, ray.startPoint - center)) / glm::length(ray.direction) <= radius;
     }
 
     [[nodiscard]] inline glm::vec3 collisionPoint(const Ray& ray) const final{
-
+        float d = std::abs(glm::dot(normal, a));
+        float t = - ((glm::dot(ray.startPoint, normal) + d) / glm::dot(ray.direction, normal));
+        //TODO: possible improvement - branch at return
+        const glm::vec3 point = ray.getPoint(t);
+        return checkIfInsideTriangle(point) ? point : glm::vec3();
     }
 
     [[nodiscard]] inline glm::vec3 normalAtPoint(const glm::vec3& point) const final{
@@ -55,6 +59,14 @@ struct Triangle : public IObject{
     }
 
 private:
+
+    [[nodiscard]] inline bool checkIfInsideTriangle(const glm::vec3& point) const{
+        //As per https://www.cs.princeton.edu/courses/archive/fall00/cs426/lectures/raycast/sld018.htm
+        return glm::dot(normal, glm::cross(b - a, point - a)) > 0.f &&
+               glm::dot(normal, glm::cross(c - b, point - b)) > 0.f &&
+               glm::dot(normal, glm::cross(a - c, point - c)) > 0.f;
+    }
+
     const glm::vec3 a, b, c;
     glm::vec3 normal;
     glm::vec3 center;

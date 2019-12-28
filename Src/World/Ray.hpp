@@ -11,6 +11,10 @@
 struct Ray{
     const glm::vec3 startPoint;
     const glm::vec3 direction;
+
+    inline glm::vec3 getPoint(float t) const{
+        return startPoint + direction * t;
+    }
 };
 
 #endif //CPP_NRTRT_RAY_HPP
