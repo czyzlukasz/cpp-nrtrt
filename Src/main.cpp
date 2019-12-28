@@ -4,8 +4,10 @@
 #include <Camera.hpp>
 #include <chrono>
 #include <thread>
+#include <RandGen.hpp>
 
 int main(){
+    RandGen::initRandGen();
     Camera<400, 400, 70> camera;
     while(true) {
         camera.refreshDisplayedImage();
