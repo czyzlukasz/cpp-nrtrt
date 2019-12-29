@@ -15,13 +15,14 @@
 #include <Pixel.hpp>
 #include <RandGen/RandGen.hpp>
 #include <Worker.hpp>
+#include <WorkerPool.hpp>
 
 using uint = unsigned int;
 
 
-template<uint WIDTH, uint HEIGHT, uint FOV, typename vec3=glm::dvec3>
+template<uint WIDTH, uint HEIGHT, uint FOV, uint NUM_OF_WORKER_THREADS = 16, typename vec3=glm::dvec3>
 struct Camera {
-    Camera() : window(sf::VideoMode(WIDTH, HEIGHT), "cpp-nrtrt") {
+    Camera() : window(sf::VideoMode(WIDTH, HEIGHT), "cpp-nrtrt"), workerPool(world){
         window.setFramerateLimit(30);
 
         displayThread = std::thread([&]() {
@@ -52,10 +53,9 @@ struct Camera {
     }
 
     void startRender(){
-        //To start the render, Camera needs to split the work between multiple worker threads
-
         //TODO: Start with sorting the world's items from nearest to furthest
-        Worker worker(world);
+        world.sortObjects();
+        //To start the render, Camera needs to split the work between multiple worker threads
         for(uint y = 0; y < HEIGHT; ++y){
             for(uint x = 0; x < WIDTH; ++x){
                 const auto [angleX, angleY] = getAngle(x, y);
@@ -64,9 +64,12 @@ struct Camera {
                 direction = glm::rotateX(direction, angleY);
 
                 Ray ray{glm::vec3(), glm::normalize(direction)};
-                imageBuffer.at(x + y * WIDTH) = worker.getColorAtRay(ray);
+                workerPool.initWorkerPool(ray, x + y * WIDTH);
             }
         }
+
+        //TODO: just pass a imageBuffer to startProcessing()
+        workerPool.startProcessing(imageBuffer);
     }
 
 private:
@@ -85,6 +88,7 @@ private:
     std::array<Pixel, WIDTH * HEIGHT> imageBuffer;
     std::thread displayThread;
     World world;
+    WorkerPool<NUM_OF_WORKER_THREADS, WIDTH * HEIGHT> workerPool;
 };
 
 

@@ -11,10 +11,10 @@ include_directories(Src/Object)
 include_directories(Src/RandGen)
 
 add_library(Worker Src/Camera/Worker.cpp)
+add_library(WorkerPool Src/Camera/WorkerPool.cpp)
 
 add_library(Camera Src/Camera/Camera.cpp)
-target_link_libraries(Camera Worker sfml-graphics sfml-window sfml-system pthread)
-
+target_link_libraries(Camera Worker WorkerPool sfml-graphics sfml-window sfml-system pthread)
 
 add_library(World Src/World/World.cpp)
 
