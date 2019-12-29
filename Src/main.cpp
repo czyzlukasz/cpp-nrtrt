@@ -17,8 +17,19 @@ int main(){
             glm::vec3(1, -1, -5),
             glm::vec3(0, 1, -5)
     ));
+    camera.getWorld().addObject(std::make_unique<Triangle>(
+            glm::vec3(-1, -1, -3),
+            glm::vec3(1, -1, -3),
+            glm::vec3(0, -1, -6)
+    ));
+//    camera.getWorld().addObject(std::make_unique<Triangle>(
+//            glm::vec3(10, -1, -1),
+//            glm::vec3(-10, -1, -11),
+//            glm::vec3(10, -1, -11)
+//    ));
     camera.getWorld().addLight(Light{glm::vec3{0, 10, 0}, 1.f});
-    while(true) {
+    while(true)
+    {
         camera.startRender();
     }
 }

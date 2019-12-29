@@ -38,14 +38,14 @@ struct Camera {
         return imageBuffer.at(x + y * WIDTH);
     }
 
-    //Returns the angle of given pixel by calculating deviation from "front"
-    inline auto getAngle(int x, int y) const{
-        //minus is there for reversing direction of rotation
-        static constexpr float ANGLE_PER_PIXEL = - static_cast<float>(FOV) / WIDTH * 2. * M_PI / 360.;
-        static constexpr int HALF_WIDTH = WIDTH / 2;
-        static constexpr int HALF_HEIGHT = HEIGHT / 2;
-        return std::make_tuple((x - HALF_WIDTH) * ANGLE_PER_PIXEL,
-                               (y - HALF_HEIGHT) * ANGLE_PER_PIXEL);
+    //Returns the direction of given pixel by calculating deviation from "front"
+    inline glm::vec3 getDirection(int x, int y) const{
+        constexpr float RANGE = std::tan(FOV / 2.f);
+        constexpr float MOVE_PER_X = 2.f * RANGE / WIDTH;
+        constexpr float MOVE_PER_Y = - 2.f * RANGE / HEIGHT;
+        const float deviationFromCenterX = static_cast<float>(x) - WIDTH / 2.f;
+        const float deviationFromCenterY = static_cast<float>(y) - HEIGHT / 2.f;
+        return glm::normalize(glm::vec3(deviationFromCenterX * MOVE_PER_X, deviationFromCenterY * MOVE_PER_Y,-1.f));
     }
 
     inline World& getWorld(){
@@ -58,12 +58,7 @@ struct Camera {
         //To start the render, Camera needs to split the work between multiple worker threads
         for(uint y = 0; y < HEIGHT; ++y){
             for(uint x = 0; x < WIDTH; ++x){
-                const auto [angleX, angleY] = getAngle(x, y);
-                glm::vec3 direction(0.f, 0.f, -1.f);
-                direction = glm::rotateY(direction, angleX);
-                direction = glm::rotateX(direction, angleY);
-
-                Ray ray{glm::vec3(), glm::normalize(direction)};
+                Ray ray{glm::vec3(), getDirection(x, y)};
                 workerPool.initWorkerPool(ray, x + y * WIDTH);
             }
         }
