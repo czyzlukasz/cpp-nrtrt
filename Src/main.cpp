@@ -20,14 +20,15 @@ int main(){
     camera.getWorld().addObject(std::make_unique<Triangle>(
             glm::vec3(-1, -1, -3),
             glm::vec3(1, -1, -3),
-            glm::vec3(0, -1, -6)
+            glm::vec3(1, -1, -6)
     ));
-//    camera.getWorld().addObject(std::make_unique<Triangle>(
-//            glm::vec3(10, -1, -1),
-//            glm::vec3(-10, -1, -11),
-//            glm::vec3(10, -1, -11)
-//    ));
-    camera.getWorld().addLight(Light{glm::vec3{0, 10, 0}, 1.f});
+    camera.getWorld().addObject(std::make_unique<Triangle>(
+            glm::vec3(-1, -1, -3),
+            glm::vec3(1, -1, -6),
+            glm::vec3(-1, -1, -6)
+    ));
+    camera.getWorld().addLight(Light{glm::vec3{0, 10, -6}, 1.f});
+    camera.getWorld().addLight(Light{glm::vec3{0, 10, 5}, 1.f});
     while(true)
     {
         camera.startRender();
