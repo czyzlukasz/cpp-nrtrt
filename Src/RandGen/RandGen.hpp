@@ -18,15 +18,16 @@ struct RandGen {
     }
 
     static inline float getRandom(){
-        static constexpr size_t halfSize = stack.size() / 2;
-        if(itemsInArray < halfSize){
-            replenishStack();
-        }
-        return stack.at(--itemsInArray);
+        return dist(engine);
+//        static constexpr size_t halfSize = stack.size() / 2;
+//        if(itemsInArray < halfSize){
+//            replenishStack();
+//        }
+//        return stack.at(--itemsInArray);
     }
 
 private:
-
+    //TODO: do that in another thread
     static inline void replenishStack(){
         for(; itemsInArray < stack.size(); ++itemsInArray){
             stack.at(itemsInArray) = dist(engine);
