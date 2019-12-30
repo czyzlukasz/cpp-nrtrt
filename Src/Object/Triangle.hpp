@@ -11,7 +11,7 @@
 
 
 struct Triangle : public IObject{
-    Triangle(const glm::vec3 a, const glm::vec3 b, const glm::vec3 c) : a(a), b(b), c(c){
+    Triangle(const glm::vec3& a, const glm::vec3& b, const glm::vec3& c, Pixel color) : a(a), b(b), c(c), color(color){
         const glm::vec3 sideA  = a - c;
         const glm::vec3 sideB  = b - c;
         //Calculating normal of triangle requires cross product of its two sides
@@ -58,6 +58,10 @@ struct Triangle : public IObject{
         return normal;
     }
 
+    [[nodiscard]] Pixel getColor() const final{
+        return color;
+    }
+
 private:
 
     [[nodiscard]] inline bool checkIfInsideTriangle(const glm::vec3& point) const{
@@ -68,6 +72,7 @@ private:
     }
 
     const glm::vec3 a, b, c;
+    const Pixel color;
     glm::vec3 normal;
     glm::vec3 center;
     float radius;

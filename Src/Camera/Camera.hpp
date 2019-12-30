@@ -23,8 +23,7 @@ using uint = unsigned int;
 template<uint WIDTH, uint HEIGHT, uint FOV, uint NUM_OF_WORKER_THREADS = 16, typename vec3=glm::dvec3>
 struct Camera {
     Camera() : window(sf::VideoMode(WIDTH, HEIGHT), "cpp-nrtrt"), workerPool(world){
-        window.setFramerateLimit(30);
-
+        // window.setFramerateLimit(30);
         displayThread = std::thread([&]() {
             while(true) {
                 refreshDisplayedImage();

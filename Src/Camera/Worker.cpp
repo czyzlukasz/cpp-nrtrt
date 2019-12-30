@@ -29,7 +29,12 @@ Pixel Worker::getColorAtRay(const Ray& ray, uint recursionDepth) const{
     }
     if(objectIdx < world.getObjects().size()){
         const glm::vec3 reflectionVector = getReflectionVector(world.getObjects().at(objectIdx), closestCollisionPoint, ray);
-        return world.getObjects().at(objectIdx)->getColor() * getDirectLuminosity(closestCollisionPoint, reflectionVector);
+        if(recursionDepth < 2){
+            return getColorAtRay(Ray{closestCollisionPoint, reflectionVector}, ++recursionDepth);
+        }
+        else{
+            return world.getObjects().at(objectIdx)->getColor() * getDirectLuminosity(closestCollisionPoint, reflectionVector);
+        }
     }
     else {
         return Pixel();

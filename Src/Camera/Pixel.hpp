@@ -10,7 +10,7 @@
 
 //POD to store RGBA data of pixel
 struct Pixel{
-    sf::Uint8 R = 0, G = 255,  B = 0, A = 255;
+    sf::Uint8 R = 0, G = 0,  B = 0, A = 255;
 
     Pixel operator* (float factor) const{
         return Pixel{static_cast<sf::Uint8>(R * factor),
