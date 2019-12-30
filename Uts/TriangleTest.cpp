@@ -9,7 +9,9 @@
 struct TriangleTest : public ::testing::Test{
     TriangleTest() : t(glm::vec3(10, 14, 15),
                        glm::vec3(10, 10, 10),
-                     glm::vec3(10, 10, 19)),
+                       glm::vec3(10, 10, 19),
+                       Pixel(),
+                       0.5f),
                     passRay(Ray{glm::vec3(1, 1, 1),glm::normalize(glm::vec3(1, 1.1, 1.4))}),
                     failRay(Ray{glm::vec3(1, 1, 1),glm::normalize(glm::vec3(1, 2, 1.1))}){
     }

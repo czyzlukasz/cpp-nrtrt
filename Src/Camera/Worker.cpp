@@ -5,6 +5,7 @@
 #include <Worker.hpp>
 #include <Pixel.hpp>
 #include <limits>
+#include <RandGen.hpp>
 
 
 Pixel Worker::getColorAtRay(const Ray& ray, uint recursionDepth) const{
@@ -29,8 +30,31 @@ Pixel Worker::getColorAtRay(const Ray& ray, uint recursionDepth) const{
     }
     if(objectIdx < world.getObjects().size()){
         const glm::vec3 reflectionVector = getReflectionVector(world.getObjects().at(objectIdx), closestCollisionPoint, ray);
+        constexpr uint NUM_OF_SAMPLES = 8;
         if(recursionDepth < 2){
-            return getColorAtRay(Ray{closestCollisionPoint, reflectionVector}, ++recursionDepth);
+            //SuperPixel is used to cumulate values of all reflected rays
+            struct SuperPixel{
+                uint r, g, b;
+            };
+            SuperPixel sPixel{0,0,0};
+            for(int sample = 0; sample < NUM_OF_SAMPLES; ++sample){
+                const glm::vec3 deviatedVector = RandGen::deviateVector(reflectionVector, world.getObjects().at(objectIdx)->getDiffuseFactor());
+                //Check if calculated vector is not over 90 degrees to the normal
+                if(glm::dot(deviatedVector, world.getObjects().at(objectIdx)->normalAtPoint(closestCollisionPoint)) < 0.f){
+                    --sample;
+                    continue;
+                }
+                const Ray sampleRay = {closestCollisionPoint, deviatedVector};
+                const Pixel samplePixel = getColorAtRay(sampleRay, recursionDepth + 1);
+                const Pixel directLuminosityPixel = world.getObjects().at(objectIdx)->getColor() * getDirectLuminosity(closestCollisionPoint, reflectionVector);
+                sPixel.r += samplePixel.R + directLuminosityPixel.R;
+                sPixel.g += samplePixel.G + directLuminosityPixel.G;
+                sPixel.b += samplePixel.B + directLuminosityPixel.B;
+            }
+            return Pixel{static_cast<sf::Uint8>(sPixel.r / (NUM_OF_SAMPLES * 2)),
+                         static_cast<sf::Uint8>(sPixel.g / (NUM_OF_SAMPLES * 2)),
+                         static_cast<sf::Uint8>(sPixel.b / (NUM_OF_SAMPLES * 2)),
+                         255};
         }
         else{
             return world.getObjects().at(objectIdx)->getColor() * getDirectLuminosity(closestCollisionPoint, reflectionVector);

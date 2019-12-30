@@ -16,6 +16,8 @@ struct IObject{
     [[nodiscard]] virtual glm::vec3 collisionPoint(const Ray& ray) const = 0;
     [[nodiscard]] virtual glm::vec3 normalAtPoint(const glm::vec3& point) const = 0;
     [[nodiscard]] virtual Pixel getColor() const = 0;
+    //Material factor, 0.0=mirror, 1.0=perfectly matt
+    [[nodiscard]] virtual float getDiffuseFactor() const = 0;
 };
 
 #endif //CPP_NRTRT_IOBJECT_HPP

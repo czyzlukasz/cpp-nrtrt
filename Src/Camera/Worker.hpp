@@ -10,6 +10,7 @@
 #include <Pixel.hpp>
 #include <queue>
 #include <functional>
+#include <unordered_map>
 
 
 struct Worker {
@@ -39,6 +40,7 @@ private:
 
     //World is read-only
     const World& world;
+    std::unordered_multimap<uint, Pixel> processedPixels;
     std::queue<std::pair<Ray, uint>> raysToProcess;
 };
 

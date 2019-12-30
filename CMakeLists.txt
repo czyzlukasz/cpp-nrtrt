@@ -10,6 +10,8 @@ include_directories(Src/World)
 include_directories(Src/Object)
 include_directories(Src/RandGen)
 
+add_library(RandGen Src/RandGen/RandGen.cpp)
+
 add_library(Worker Src/Camera/Worker.cpp)
 add_library(WorkerPool Src/Camera/WorkerPool.cpp)
 
@@ -17,8 +19,6 @@ add_library(Camera Src/Camera/Camera.cpp)
 target_link_libraries(Camera Worker WorkerPool sfml-graphics sfml-window sfml-system pthread)
 
 add_library(World Src/World/World.cpp)
-
-add_library(RandGen Src/RandGen/RandGen.cpp)
 
 add_executable(cpp-nrtrt Src/main.cpp)
 target_link_libraries(cpp-nrtrt Camera World RandGen)
@@ -29,5 +29,5 @@ include_directories(Uts)
 include(GoogleTest)
 add_subdirectory(Uts/googletest)
 
-add_executable(runUnitTests Uts/RayTest.cpp Uts/TriangleTest.cpp)
-target_link_libraries(runUnitTests gtest gtest_main)
+add_executable(runUnitTests Uts/RayTest.cpp Uts/TriangleTest.cpp Uts/RandGenTest.cpp)
+target_link_libraries(runUnitTests gtest gtest_main RandGen)
