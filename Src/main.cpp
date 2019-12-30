@@ -35,8 +35,13 @@ int main(){
             Pixel{0, 255, 0, 255},
             0.75f
     ));
-    camera.getWorld().addLight(Light{glm::vec3{0, 3, -7}, 1.f});
-    camera.getWorld().addLight(Light{glm::vec3{0, 4, 5}, 1.f});
+    camera.getWorld().addObject(std::make_unique<Light>(
+            glm::vec3(0, 5, 0),
+            glm::vec3(-2, 3, 0),
+            glm::vec3(2, 3, 0),
+            Pixel{0, 255, 0, 255},
+            0.75f
+    ));
 //     while(true)
     {
         camera.startRender();

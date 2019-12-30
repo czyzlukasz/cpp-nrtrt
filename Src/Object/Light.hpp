@@ -5,11 +5,18 @@
 #ifndef CPP_NRTRT_LIGHT_HPP
 #define CPP_NRTRT_LIGHT_HPP
 
-#include <glm/vec3.hpp>
+#include <Triangle.hpp>
 
 
-struct Light{
-    const glm::vec3 position;
+struct Light : public Triangle{
+    Light(const glm::vec3& a, const glm::vec3& b, const glm::vec3& c, Pixel color, float intensivity)
+        : Triangle(a, b, c, color, 1.f), intensivity(intensivity){
+    }
+
+    [[nodiscard]] inline bool isLight() const final{
+        return true;
+    }
+
     const float intensivity;
 };
 

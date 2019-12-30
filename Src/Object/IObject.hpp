@@ -18,6 +18,10 @@ struct IObject{
     [[nodiscard]] virtual Pixel getColor() const = 0;
     //Material factor, 0.0=mirror, 1.0=perfectly matt
     [[nodiscard]] virtual float getDiffuseFactor() const = 0;
+    //Used to indicate if object is a light
+    [[nodiscard]] virtual bool isLight() const{
+        return false;
+    }
 };
 
 #endif //CPP_NRTRT_IOBJECT_HPP

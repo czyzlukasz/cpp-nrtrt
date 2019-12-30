@@ -13,7 +13,7 @@
 #include <unordered_map>
 #include <algorithm>
 #include <iostream>
-
+#include <variant>
 
 struct Worker {
     explicit Worker(const World& world) : world(world){
@@ -31,19 +31,22 @@ struct Worker {
     void processRays(std::array<Pixel, 160000>& container){
         while(!raysToProcess.empty()){
             const auto& rayToProcess = raysToProcess.back();
-            container.at(rayToProcess.second) = getColorAtRay(rayToProcess.first);
+            const auto result = getColorAtRay(rayToProcess.first);
+            if(auto pixel = std::get_if<Pixel>(&result)){
+                container.at(rayToProcess.second) = *pixel;
+            }
             raysToProcess.pop_back();
         }
     }
 
 private:
-    [[nodiscard]] Pixel getColorAtRay(const Ray& ray, uint recursionDepth = 0) const;
+    [[nodiscard]] std::variant<Pixel, Light> getColorAtRay(const Ray& ray, uint recursionDepth = 0) const;
 
     [[nodiscard]] inline glm::vec3 getReflectionVector(const auto& objectPtr, const glm::vec3& collisionPoint, const Ray& ray) const{
         return ray.direction - 2.f * glm::dot(objectPtr->normalAtPoint(collisionPoint), ray.direction) * objectPtr->normalAtPoint(collisionPoint);
     }
 
-    [[nodiscard]] inline float getDirectLuminosity(const glm::vec3& point, const glm::vec3& normal) const;
+//    [[nodiscard]] inline float getDirectLuminosity(const glm::vec3& point, const glm::vec3& normal) const;
 
     //World is read-only
     const World& world;

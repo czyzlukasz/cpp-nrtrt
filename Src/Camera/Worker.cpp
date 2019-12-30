@@ -8,7 +8,7 @@
 #include <RandGen.hpp>
 
 
-Pixel Worker::getColorAtRay(const Ray& ray, uint recursionDepth) const{
+std::variant<Pixel, Light> Worker::getColorAtRay(const Ray& ray, uint recursionDepth) const{
     float minimalDistance = std::numeric_limits<float>::max();
     size_t objectIdx = std::numeric_limits<size_t>::max();
     glm::vec3 closestCollisionPoint = glm::vec3();
@@ -45,22 +45,33 @@ Pixel Worker::getColorAtRay(const Ray& ray, uint recursionDepth) const{
                 //     --sample;
                 //     continue;
                 // }
+                //Check if hit object is light
+
                 const Ray sampleRay = {closestCollisionPoint, deviatedVector};
-                const Pixel samplePixel = getColorAtRay(sampleRay, recursionDepth + 1);
-                const Pixel directLuminosityPixel = world.getObjects().at(objectIdx)->getColor() * 
-                    getDirectLuminosity(closestCollisionPoint, world.getObjects().at(objectIdx)->normalAtPoint(closestCollisionPoint));
-                sPixel.r += samplePixel.R + directLuminosityPixel.R;
-                sPixel.g += samplePixel.G + directLuminosityPixel.G;
-                sPixel.b += samplePixel.B + directLuminosityPixel.B;
+                const auto samplePixel = getColorAtRay(sampleRay, recursionDepth + 1);
+                //Check if hit object is light
+                if(const auto light = std::get_if<Light>(&samplePixel)){
+                    const Pixel pixel = light->getColor() * glm::dot(world.getObjects().at(objectIdx)->normalAtPoint(closestCollisionPoint), deviatedVector);
+                    sPixel.r += pixel.R;
+                    sPixel.g += pixel.G;
+                    sPixel.b += pixel.B;
+                    continue;
+                }
+                else {
+                    const auto pixel = std::get<Pixel>(samplePixel);
+                    sPixel.r += pixel.R;
+                    sPixel.g += pixel.G;
+                    sPixel.b += pixel.B;
+                    continue;
+                }
             }
-            return Pixel{static_cast<sf::Uint8>(sPixel.r / (NUM_OF_SAMPLES * 2)),
-                         static_cast<sf::Uint8>(sPixel.g / (NUM_OF_SAMPLES * 2)),
-                         static_cast<sf::Uint8>(sPixel.b / (NUM_OF_SAMPLES * 2)),
+            return Pixel{static_cast<sf::Uint8>(sPixel.r / (NUM_OF_SAMPLES)),
+                         static_cast<sf::Uint8>(sPixel.g / (NUM_OF_SAMPLES)),
+                         static_cast<sf::Uint8>(sPixel.b / (NUM_OF_SAMPLES)),
                          255};
         }
         else{
-            return world.getObjects().at(objectIdx)->getColor() * 
-                getDirectLuminosity(closestCollisionPoint, world.getObjects().at(objectIdx)->normalAtPoint(closestCollisionPoint));
+            return world.getObjects().at(objectIdx)->getColor();
         }
     }
     else {
@@ -68,24 +79,24 @@ Pixel Worker::getColorAtRay(const Ray& ray, uint recursionDepth) const{
     }
 }
 
-inline float Worker::getDirectLuminosity(const glm::vec3& point, const glm::vec3& normal) const{
-    float result = 0.f;
-    static constexpr glm::vec3 zeroVector = glm::vec3();
-    for(const Light& light : world.getLights()){
-        const glm::vec3 lightDirection = glm::normalize(light.position - point);
-        const Ray reflectionRay{point, lightDirection};
-        bool isCollision = false;
-        for(auto& object : world.getObjects()){
-            const glm::vec3 collisionPoint = object->collisionPoint(reflectionRay);
-            if(glm::length(collisionPoint - point) > 0.1f){
-                // isCollision = true;
-                // break;
-            }
-        }
-        if(!isCollision){
-            const float dotProduct = glm::dot(lightDirection, normal);
-            result += dotProduct > 0.f ? dotProduct : 0.f;
-        }
-    }
-    return result;
-}
+//inline float Worker::getDirectLuminosity(const glm::vec3& point, const glm::vec3& normal) const{
+//    float result = 0.f;
+//    static constexpr glm::vec3 zeroVector = glm::vec3();
+//    for(const Light& light : world.getLights()){
+//        const glm::vec3 lightDirection = glm::normalize(light.position - point);
+//        const Ray reflectionRay{point, lightDirection};
+//        bool isCollision = false;
+//        for(auto& object : world.getObjects()){
+//            const glm::vec3 collisionPoint = object->collisionPoint(reflectionRay);
+//            if(glm::length(collisionPoint - point) > 0.1f){
+//                // isCollision = true;
+//                // break;
+//            }
+//        }
+//        if(!isCollision){
+//            const float dotProduct = glm::dot(lightDirection, normal);
+//            result += dotProduct > 0.f ? dotProduct : 0.f;
+//        }
+//    }
+//    return result;
+//}
