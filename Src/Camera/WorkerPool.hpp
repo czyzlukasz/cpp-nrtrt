@@ -8,6 +8,7 @@
 #include <Worker.hpp>
 #include <thread>
 
+
 template <uint NUM_OF_WORKER_THREADS, uint NUM_OF_PIXELS>
 struct WorkerPool {
     explicit WorkerPool(const World& world) : currentWorkerSelected(0){
@@ -22,6 +23,12 @@ struct WorkerPool {
         ++currentWorkerSelected;
         if(!(currentWorkerSelected % NUM_OF_WORKER_THREADS)){
             currentWorkerSelected = 0;
+        }
+    }
+
+    void shuffle(){
+        for(auto& worker : workerArray){
+            worker.shuffle();
         }
     }
 

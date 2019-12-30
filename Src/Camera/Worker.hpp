@@ -11,6 +11,8 @@
 #include <queue>
 #include <functional>
 #include <unordered_map>
+#include <algorithm>
+#include <iostream>
 
 
 struct Worker {
@@ -18,14 +20,19 @@ struct Worker {
     }
 
     void addRay(const Ray& ray, uint pixelId){
-        raysToProcess.push(std::make_pair(ray, pixelId));
+        raysToProcess.push_back(std::make_pair(ray, pixelId));
+    }
+
+    void shuffle(){
+        // static_assert(std::is_swappable<Ray>());
+        // std::random_shuffle(raysToProcess.begin(), raysToProcess.end());
     }
 
     void processRays(std::array<Pixel, 160000>& container){
         while(!raysToProcess.empty()){
-            const auto& rayToProcess = raysToProcess.front();
+            const auto& rayToProcess = raysToProcess.back();
             container.at(rayToProcess.second) = getColorAtRay(rayToProcess.first);
-            raysToProcess.pop();
+            raysToProcess.pop_back();
         }
     }
 
@@ -36,12 +43,12 @@ private:
         return ray.direction - 2.f * glm::dot(objectPtr->normalAtPoint(collisionPoint), ray.direction) * objectPtr->normalAtPoint(collisionPoint);
     }
 
-    [[nodiscard]] inline float getDirectLuminosity(const glm::vec3& point, const glm::vec3& direction) const;
+    [[nodiscard]] inline float getDirectLuminosity(const glm::vec3& point, const glm::vec3& normal) const;
 
     //World is read-only
     const World& world;
     std::unordered_multimap<uint, Pixel> processedPixels;
-    std::queue<std::pair<Ray, uint>> raysToProcess;
+    std::vector<std::pair<Ray, uint>> raysToProcess;
 };
 
 

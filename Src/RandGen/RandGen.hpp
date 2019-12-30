@@ -54,7 +54,7 @@ struct RandGen {
         //std::cout << crossProduct.x << " " << crossProduct.y << " " << crossProduct.z << std::endl;
         const float angleToRotate = glm::angle(zVector, vector);
         //std::cout << angleToRotate << std::endl;
-        return glm::rotate(randomVector, angleToRotate, crossProduct);
+        return glm::normalize(glm::rotate(randomVector, angleToRotate, crossProduct));
     }
 
 private:

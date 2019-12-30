@@ -23,16 +23,16 @@ using uint = unsigned int;
 template<uint WIDTH, uint HEIGHT, uint FOV, uint NUM_OF_WORKER_THREADS = 16, typename vec3=glm::dvec3>
 struct Camera {
     Camera() : 
-        // window(sf::VideoMode(WIDTH, HEIGHT), "cpp-nrtrt"), 
+        window(sf::VideoMode(WIDTH, HEIGHT), "cpp-nrtrt"), 
         workerPool(world){
-        // window.setFramerateLimit(30);
-        // displayThread = std::thread([&]() {
-        //     while(true) {
-        //         refreshDisplayedImage();
-        //         std::this_thread::sleep_for(std::chrono_literals::operator ""ms(100));
-        //     }
-        // });
-        // displayThread.detach();
+        window.setFramerateLimit(30);
+        displayThread = std::thread([&]() {
+            while(true) {
+                refreshDisplayedImage();
+                std::this_thread::sleep_for(std::chrono_literals::operator ""ms(100));
+            }
+        });
+        displayThread.detach();
     }
 
     inline Pixel& getPixel(uint x, uint y){
@@ -63,7 +63,8 @@ struct Camera {
                 workerPool.initWorkerPool(ray, x + y * WIDTH);
             }
         }
-
+        //Optional step, just looks way cooler
+        workerPool.shuffle();
         //TODO: just pass a imageBuffer to startProcessing()
         workerPool.startProcessing(imageBuffer);
     }
