@@ -8,39 +8,39 @@ int main(){
     RandGen::initRandGen();
     Camera<400, 400, 70> camera;
     camera.getWorld().addObject(std::make_unique<Triangle>(
-            glm::vec3(-2, -1, -4),
-            glm::vec3(0, -1, -4),
-            glm::vec3(-1, 1, -4),
-            Pixel{255, 255, 0, 255},
-            0.95f
+            glm::vec3(-2, -1, -3),
+            glm::vec3(0, -1, -3),
+            glm::vec3(-1, 1, -5),
+            Pixel{200, 200, 0, 255},
+            0.f
     ));
     camera.getWorld().addObject(std::make_unique<Triangle>(
             glm::vec3(-1, -1, -5),
             glm::vec3(1, -1, -5),
             glm::vec3(0, 1, -5),
-            Pixel{0, 255, 255, 255},
-            0.05f
+            Pixel{0, 200, 200, 255},
+            0.0f
     ));
     camera.getWorld().addObject(std::make_unique<Triangle>(
             glm::vec3(-3, -1, -3),
             glm::vec3(3, -1, -3),
             glm::vec3(3, -1, -6),
-            Pixel{0, 255, 0, 255},
-            0.1f
+            Pixel{0, 200, 0, 255},
+            1.f
     ));
     camera.getWorld().addObject(std::make_unique<Triangle>(
             glm::vec3(-3, -1, -3),
             glm::vec3(3, -1, -6),
             glm::vec3(-3, -1, -6),
-            Pixel{0, 255, 0, 255},
-            0.75f
+            Pixel{0, 200, 0, 255},
+            1.f
     ));
     camera.getWorld().addObject(std::make_unique<Light>(
-            glm::vec3(0, 5, 0),
-            glm::vec3(-2, 3, 0),
-            glm::vec3(2, 3, 0),
-            Pixel{0, 255, 0, 255},
-            0.75f
+            glm::vec3(-5, 5, 1),
+            glm::vec3(-7, 3, 1),
+            glm::vec3(-3, 3, 1),
+            Pixel{0, 200, 0, 255},
+            1.f
     ));
 //     while(true)
     {

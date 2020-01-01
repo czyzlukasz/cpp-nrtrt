@@ -40,11 +40,11 @@ std::variant<Pixel, Light> Worker::getColorAtRay(const Ray& ray, uint recursionD
             for(int sample = 0; sample < NUM_OF_SAMPLES; ++sample){
                 const glm::vec3 deviatedVector = RandGen::deviateVector(reflectionVector, world.getObjects().at(objectIdx)->getDiffuseFactor());
                 //TODO: check if deviatedVector does point 'outside' shape
-                //Check if calculated vector is not over 90 degrees to the normal
-                // if(glm::dot(deviatedVector, world.getObjects().at(objectIdx)->normalAtPoint(closestCollisionPoint)) < 0.f){
-                //     --sample;
-                //     continue;
-                // }
+//                Check if calculated vector is not over 90 degrees to the normal
+//                 if(glm::dot(deviatedVector, world.getObjects().at(objectIdx)->normalAtPoint(closestCollisionPoint)) < 0.f){
+//                     --sample;
+//                     continue;
+//                 }
                 //Check if hit object is light
 
                 const Ray sampleRay = {closestCollisionPoint, deviatedVector};
@@ -55,14 +55,12 @@ std::variant<Pixel, Light> Worker::getColorAtRay(const Ray& ray, uint recursionD
                     sPixel.r += pixel.R;
                     sPixel.g += pixel.G;
                     sPixel.b += pixel.B;
-                    continue;
                 }
                 else {
                     const auto pixel = std::get<Pixel>(samplePixel);
                     sPixel.r += pixel.R;
                     sPixel.g += pixel.G;
                     sPixel.b += pixel.B;
-                    continue;
                 }
             }
             return Pixel{static_cast<sf::Uint8>(sPixel.r / (NUM_OF_SAMPLES)),
@@ -71,11 +69,12 @@ std::variant<Pixel, Light> Worker::getColorAtRay(const Ray& ray, uint recursionD
                          255};
         }
         else{
-            return world.getObjects().at(objectIdx)->getColor();
+            return world.getObjects().at(objectIdx)->getColor() * glm::dot(reflectionVector, world.getObjects().at(objectIdx)->normalAtPoint(closestCollisionPoint));
+            return Pixel{0,0,0,255};
         }
     }
     else {
-        return Pixel();
+        return Pixel{0,0,20,255};
     }
 }
 
