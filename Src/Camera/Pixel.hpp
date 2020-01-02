@@ -18,6 +18,22 @@ struct Pixel{
                      static_cast<sf::Uint8>(B * factor),
                      255};
     }
+
+     Pixel operator* (const Pixel& other) const{
+        uint r = static_cast<uint>(R) * static_cast<uint>(other.R);
+        uint g = static_cast<uint>(G) * static_cast<uint>(other.G);
+        uint b = static_cast<uint>(B) * static_cast<uint>(other.B);
+        return Pixel{static_cast<sf::Uint8>(r / 255),
+                     static_cast<sf::Uint8>(g / 255),
+                     static_cast<sf::Uint8>(b / 255),
+                     255};
+    }
+
+    bool operator == (const Pixel& other) const{
+        return (R == other.R) &&
+                (G == other.G) &&
+                (B == other.B);
+    }
 };
 
 #endif //CPP_NRTRT_PIXEL_HPP

@@ -5,44 +5,52 @@
 #include <RandGen.hpp>
 
 int main(){
-    RandGen::initRandGen();
     Camera<400, 400, 70> camera;
     camera.getWorld().addObject(std::make_unique<Triangle>(
             glm::vec3(-2, -1, -3),
             glm::vec3(0, -1, -3),
-            glm::vec3(-1, 1, -5),
-            Pixel{200, 200, 0, 255},
-            0.f
+            glm::vec3(-1, 1, -3),
+            Pixel{255, 250, 50, 255},
+            1.f
     ));
     camera.getWorld().addObject(std::make_unique<Triangle>(
             glm::vec3(-1, -1, -5),
             glm::vec3(1, -1, -5),
             glm::vec3(0, 1, -5),
-            Pixel{0, 200, 200, 255},
-            0.0f
-    ));
-    camera.getWorld().addObject(std::make_unique<Triangle>(
-            glm::vec3(-3, -1, -3),
-            glm::vec3(3, -1, -3),
-            glm::vec3(3, -1, -6),
-            Pixel{0, 200, 0, 255},
+            Pixel{50, 200, 200, 255},
             1.f
     ));
     camera.getWorld().addObject(std::make_unique<Triangle>(
-            glm::vec3(-3, -1, -3),
+            glm::vec3(-3, -1, 1),
+            glm::vec3(3, -1, 1),
+            glm::vec3(3, -1, -6),
+            Pixel{50, 200, 50, 255},
+            1.f
+    ));
+    camera.getWorld().addObject(std::make_unique<Triangle>(
+            glm::vec3(-3, -1, 1),
             glm::vec3(3, -1, -6),
             glm::vec3(-3, -1, -6),
-            Pixel{0, 200, 0, 255},
+            Pixel{50, 200, 50, 255},
             1.f
     ));
-    camera.getWorld().addObject(std::make_unique<Light>(
-            glm::vec3(-5, 5, 1),
-            glm::vec3(-7, 3, 1),
-            glm::vec3(-3, 3, 1),
-            Pixel{0, 200, 0, 255},
-            1.f
+    camera.getWorld().addObject(std::make_unique<Triangle>(
+            glm::vec3(-2, -1, -1),
+            glm::vec3(0, -1, -1),
+            glm::vec3(-1, 1, -1),
+            Pixel{255, 255, 255, 255},
+            1.f,
+            true
     ));
-//     while(true)
+    camera.getWorld().addObject(std::make_unique<Triangle>(
+            glm::vec3(-30, 5, 10),
+            glm::vec3(30, 5, 10),
+            glm::vec3(30, 5, -60),
+            Pixel{255, 255, 255, 255},
+            1.f,
+            true
+    ));
+     while(true)
     {
         camera.startRender();
         camera.startRender();

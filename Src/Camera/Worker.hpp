@@ -15,12 +15,18 @@
 #include <iostream>
 #include <variant>
 
+constexpr uint spp = 256;
+
+struct SuperPixel{
+    float r = 0, g = 0, b = 0;
+};
+
 struct Worker {
     explicit Worker(const World& world) : world(world){
     }
 
     void addRay(const Ray& ray, uint pixelId){
-        raysToProcess.push_back(std::make_pair(ray, pixelId));
+        raysToProcess.emplace_back(ray, pixelId);
     }
 
     void shuffle(){
@@ -28,25 +34,22 @@ struct Worker {
         // std::random_shuffle(raysToProcess.begin(), raysToProcess.end());
     }
 
-    void processRays(std::array<Pixel, 160000>& container){
+    void processRays(std::array<std::array<Pixel, spp>, 160000>& container){
         while(!raysToProcess.empty()){
             const auto& rayToProcess = raysToProcess.back();
-            const auto result = getColorAtRay(rayToProcess.first);
-            if(auto pixel = std::get_if<Pixel>(&result)){
-                container.at(rayToProcess.second) = *pixel;
+            for(uint idx = 0; idx < spp; ++idx) {
+                container.at(rayToProcess.second).at(idx) = getColorAtRay(rayToProcess.first);
             }
             raysToProcess.pop_back();
         }
     }
 
 private:
-    [[nodiscard]] std::variant<Pixel, Light> getColorAtRay(const Ray& ray, uint recursionDepth = 0) const;
+    [[nodiscard]] Pixel getColorAtRay(const Ray &ray, uint recursionDepth = 0, std::vector<std::unique_ptr<IObject>>::const_iterator parent = std::vector<std::unique_ptr<IObject>>::const_iterator()) const;
 
     [[nodiscard]] inline glm::vec3 getReflectionVector(const auto& objectPtr, const glm::vec3& collisionPoint, const Ray& ray) const{
         return ray.direction - 2.f * glm::dot(objectPtr->normalAtPoint(collisionPoint), ray.direction) * objectPtr->normalAtPoint(collisionPoint);
     }
-
-//    [[nodiscard]] inline float getDirectLuminosity(const glm::vec3& point, const glm::vec3& normal) const;
 
     //World is read-only
     const World& world;

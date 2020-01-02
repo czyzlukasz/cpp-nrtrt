@@ -9,7 +9,7 @@
 #include <thread>
 
 
-template <uint NUM_OF_WORKER_THREADS, uint NUM_OF_PIXELS>
+template <uint NUM_OF_WORKER_THREADS, uint NUM_OF_PIXELS, uint SAMPLES_PER_PIXEL>
 struct WorkerPool {
     explicit WorkerPool(const World& world) : currentWorkerSelected(0){
         for(uint idx = 0; idx < NUM_OF_WORKER_THREADS; ++idx){
@@ -32,7 +32,7 @@ struct WorkerPool {
         }
     }
 
-    void startProcessing(std::array<Pixel, NUM_OF_PIXELS>& pixelArray){
+    void startProcessing(std::array<std::array<Pixel, SAMPLES_PER_PIXEL>, NUM_OF_PIXELS>& pixelArray){
         std::vector<std::thread> threadArray;
         for(uint idx = 0; idx < NUM_OF_WORKER_THREADS; ++idx){
             threadArray.emplace_back(&Worker::processRays, &workerArray.at(idx), std::ref(pixelArray));

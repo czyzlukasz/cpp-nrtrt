@@ -7,7 +7,6 @@
 
 #include <vector>
 #include <Triangle.hpp>
-#include <Light.hpp>
 #include <memory>
 
 struct World {
@@ -15,16 +14,8 @@ struct World {
         objects.emplace_back(std::move(object));
     }
 
-    void addLight(Light light){
-        lights.emplace_back(std::move(light));
-    }
-
     [[nodiscard]] const std::vector<std::unique_ptr<IObject>>& getObjects() const{
         return objects;
-    }
-
-    [[nodiscard]] const std::vector<Light>& getLights() const{
-        return lights;
     }
 
     void sortObjects(){
@@ -36,7 +27,6 @@ struct World {
 private:
     //TODO: check speed difference of storing unique_ptr against storing Triangle
     std::vector<std::unique_ptr<IObject>> objects;
-    std::vector<Light> lights;
 };
 
 

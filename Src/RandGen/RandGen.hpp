@@ -14,19 +14,8 @@
 #include <glm/gtx/vector_angle.hpp>
 
 struct RandGen {
-    static void initRandGen(){
-        for(; itemsInArray < stack.size(); ++itemsInArray){
-            stack.at(itemsInArray) = dist(engine);
-        }
-    }
-
     static inline float getRandom(){
         return dist(engine);
-    //    static constexpr size_t halfSize = stack.size() / 2;
-//        if(itemsInArray < halfSize){
-//            replenishStack();
-//        }
-    //    return stack.at(--itemsInArray);
     }
 
     static inline glm::vec3 deviateVector(glm::vec3 vector, float factor){

@@ -20,11 +20,12 @@
 using uint = unsigned int;
 
 
-template<uint WIDTH, uint HEIGHT, uint FOV, uint NUM_OF_WORKER_THREADS = 16, typename vec3=glm::dvec3>
+template<uint WIDTH, uint HEIGHT, uint FOV, uint NUM_OF_WORKER_THREADS = 4, uint SAMPLES_PER_PIXEL = spp, typename vec3=glm::dvec3>
 struct Camera {
     Camera() : 
         window(sf::VideoMode(WIDTH, HEIGHT), "cpp-nrtrt"), 
-        workerPool(world){
+        workerPool(world),
+        pixelBuffer(std::make_unique<std::array<std::array<Pixel, SAMPLES_PER_PIXEL>, WIDTH * HEIGHT>>()){
         window.setFramerateLimit(30);
         displayThread = std::thread([&]() {
             while(true) {
@@ -66,7 +67,7 @@ struct Camera {
         //Optional step, just looks way cooler
         workerPool.shuffle();
         //TODO: just pass a imageBuffer to startProcessing()
-        workerPool.startProcessing(imageBuffer);
+        workerPool.startProcessing(*pixelBuffer);
     }
 
 private:
@@ -75,6 +76,23 @@ private:
         sf::Texture texture;
         texture.create(WIDTH, HEIGHT);
         sf::Sprite sprite(texture);
+        static auto accumulatePixels = [&](const uint index){
+            uint r = 0, g = 0, b = 0;
+            for(auto& pixel : pixelBuffer->at(index)){
+                r += pixel.R;
+                g += pixel.G;
+                b += pixel.B;
+            }
+            return Pixel{
+                    static_cast<sf::Uint8>(r / SAMPLES_PER_PIXEL),
+                    static_cast<sf::Uint8>(g / SAMPLES_PER_PIXEL),
+                    static_cast<sf::Uint8>(b / SAMPLES_PER_PIXEL),
+                    255
+            };
+        };
+        for(uint idx = 0; idx < WIDTH * HEIGHT; ++idx){
+            imageBuffer.at(idx) = accumulatePixels(idx);
+        }
         texture.update(reinterpret_cast<sf::Uint8*>(&imageBuffer[0]));
         window.draw(sprite);
         window.display();
@@ -83,9 +101,10 @@ private:
 
     sf::RenderWindow window;
     std::array<Pixel, WIDTH * HEIGHT> imageBuffer;
+    std::unique_ptr<std::array<std::array<Pixel, SAMPLES_PER_PIXEL>, WIDTH * HEIGHT>> pixelBuffer;
     std::thread displayThread;
     World world;
-    WorkerPool<NUM_OF_WORKER_THREADS, WIDTH * HEIGHT> workerPool;
+    WorkerPool<NUM_OF_WORKER_THREADS, WIDTH * HEIGHT, SAMPLES_PER_PIXEL> workerPool;
 };
 
 

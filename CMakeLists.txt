@@ -13,6 +13,7 @@ include_directories(Src/RandGen)
 add_library(RandGen Src/RandGen/RandGen.cpp)
 
 add_library(Worker Src/Camera/Worker.cpp)
+target_link_libraries(Worker RandGen)
 add_library(WorkerPool Src/Camera/WorkerPool.cpp)
 
 add_library(Camera Src/Camera/Camera.cpp)
@@ -21,7 +22,7 @@ target_link_libraries(Camera Worker WorkerPool sfml-graphics sfml-window sfml-sy
 add_library(World Src/World/World.cpp)
 
 add_executable(cpp-nrtrt Src/main.cpp)
-target_link_libraries(cpp-nrtrt Camera World RandGen)
+target_link_libraries(cpp-nrtrt Camera World)
 
 #UTs
 enable_testing()
@@ -29,5 +30,5 @@ include_directories(Uts)
 include(GoogleTest)
 add_subdirectory(Uts/googletest)
 
-add_executable(runUnitTests Uts/RayTest.cpp Uts/TriangleTest.cpp Uts/RandGenTest.cpp)
+add_executable(runUnitTests Uts/RayTest.cpp Uts/TriangleTest.cpp Uts/RandGenTest.cpp Uts/PixelTest.cpp)
 target_link_libraries(runUnitTests gtest gtest_main RandGen)

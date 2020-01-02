@@ -11,7 +11,8 @@
 
 
 struct Triangle : public IObject{
-    Triangle(const glm::vec3& a, const glm::vec3& b, const glm::vec3& c, Pixel color, float diffuseFactor) : a(a), b(b), c(c), color(color), diffuseFactor(diffuseFactor){
+    Triangle(const glm::vec3& a, const glm::vec3& b, const glm::vec3& c, Pixel color, float diffuseFactor, bool light = false)
+        : a(a), b(b), c(c), color(color), diffuseFactor(diffuseFactor), light(light){
         const glm::vec3 sideA  = a - c;
         const glm::vec3 sideB  = b - c;
         //Calculating normal of triangle requires cross product of its two sides
@@ -58,11 +59,15 @@ struct Triangle : public IObject{
         return normal;
     }
 
-    [[nodiscard]] Pixel getColor() const final{
+    [[nodiscard]] inline Pixel getColor() const final{
         return color;
     }
-    [[nodiscard]] float getDiffuseFactor() const final{
+    [[nodiscard]] inline float getDiffuseFactor() const final{
         return diffuseFactor;
+    }
+
+    [[nodiscard]] inline bool isLight() const final{
+        return light;
     }
 private:
 
@@ -78,6 +83,7 @@ private:
     glm::vec3 normal;
     glm::vec3 center;
     float radius, diffuseFactor;
+    const bool light;
 };
 
 
