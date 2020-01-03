@@ -31,5 +31,5 @@ include_directories(Uts)
 include(GoogleTest)
 add_subdirectory(Uts/googletest)
 
-add_executable(runUnitTests Uts/RayTest.cpp Uts/TriangleTest.cpp Uts/RandGenTest.cpp Uts/PixelTest.cpp Uts/WorkerTest.cpp)
+add_executable(runUnitTests Uts/RayTest.cpp Uts/TriangleTest.cpp Uts/RandGenTest.cpp Uts/PixelTest.cpp Uts/WorkerTest.cpp Uts/SphereTest.cpp)
 target_link_libraries(runUnitTests gtest gtest_main RandGen Worker World)

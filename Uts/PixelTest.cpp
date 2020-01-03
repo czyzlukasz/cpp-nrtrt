@@ -6,9 +6,9 @@
 #include <Pixel.hpp>
 
 TEST(PixelTest, TestPixelMultiplyPixel){
-    const Pixel pixelFirst{10, 20, 30};
-    const Pixel pixelSecond{190, 190, 190};
-    const Pixel result{7, 14, 22};
+    const Pixel<> pixelFirst{10, 20, 30};
+    const Pixel<> pixelSecond{190, 190, 190};
+    const Pixel<> result{7, 14, 22};
     EXPECT_EQ(result, pixelFirst * pixelSecond);
     EXPECT_EQ(result, pixelSecond * pixelFirst);
 }
