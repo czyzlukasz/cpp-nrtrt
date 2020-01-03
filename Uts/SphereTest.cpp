@@ -32,7 +32,25 @@ TEST_F(SphereTest, TestCollisionFail){
 
 TEST_F(SphereTest, CheckCollsionPoint){
     const glm::vec3 result = sphere.collisionPoint(passRay);
-    EXPECT_FLOAT_EQ(result.x, 7.12435565298f);
-    EXPECT_FLOAT_EQ(result.y, 7.12435565298f);
-    EXPECT_FLOAT_EQ(result.z, 7.12435565298f);
+    EXPECT_FLOAT_EQ(result.x, 7.1132493f);
+    EXPECT_FLOAT_EQ(result.y, 7.1132493f);
+    EXPECT_FLOAT_EQ(result.z, 7.1132493f);
+}
+
+TEST_F(SphereTest, CheckNormal){
+    const glm::vec3 collisionPoint = sphere.collisionPoint(passRay);
+    const glm::vec3 normal = sphere.normalAtPoint(collisionPoint);
+    const float val = 1. / std::sqrt(3);
+    EXPECT_FLOAT_EQ(normal.x, -val);
+    EXPECT_FLOAT_EQ(normal.y, -val);
+    EXPECT_FLOAT_EQ(normal.z, -val);
+}
+
+TEST_F(SphereTest, CheckNormalAtAngle){
+    const Ray ray{{10, 7.5, 0}, {0, 0, 1}};
+    const glm::vec3 collisionPoint = sphere.collisionPoint(ray);
+    const glm::vec3 normal = sphere.normalAtPoint(collisionPoint);
+    EXPECT_FLOAT_EQ(normal.x, 0.f);
+    EXPECT_FLOAT_EQ(normal.y, -0.5f);
+    EXPECT_FLOAT_EQ(normal.z, -0.86602545f);
 }

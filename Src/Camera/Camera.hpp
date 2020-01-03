@@ -28,7 +28,8 @@ struct Camera {
         pixelBuffer(std::make_unique<std::array<std::vector<Pixel<>>, WIDTH * HEIGHT>>()){
         window.setFramerateLimit(30);
         displayThread = std::thread([&]() {
-            while(true) {
+            sf::Event event;
+            while(window.waitEvent(event)) {
                 refreshDisplayedImage();
                 std::this_thread::sleep_for(std::chrono_literals::operator ""ms(100));
             }
@@ -85,9 +86,9 @@ private:
             }
             const float bufferSize = pixelBuffer->at(index).size() ?: 1;
             return Pixel<sf::Uint8>{
-                    static_cast<sf::Uint8>(r / bufferSize),
-                    static_cast<sf::Uint8>(g / bufferSize),
-                    static_cast<sf::Uint8>(b / bufferSize),
+                    static_cast<sf::Uint8>(std::min(r / bufferSize, static_cast<float>(std::numeric_limits<sf::Uint8>::max()))),
+                    static_cast<sf::Uint8>(std::min(g / bufferSize, static_cast<float>(std::numeric_limits<sf::Uint8>::max()))),
+                    static_cast<sf::Uint8>(std::min(b / bufferSize, static_cast<float>(std::numeric_limits<sf::Uint8>::max()))),
                     255
             };
         };
