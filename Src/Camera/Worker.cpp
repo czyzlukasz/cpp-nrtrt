@@ -8,11 +8,11 @@
 #include <RandGen.hpp>
 
 
-Pixel Worker::getColorAtRay(const Ray &ray, uint recursionDepth, std::vector<std::unique_ptr<IObject>>::const_iterator parent) const {
+Pixel<> Worker::getColorAtRay(const Ray &ray, uint recursionDepth, std::vector<std::unique_ptr<IObject>>::const_iterator parent) const {
     constexpr uint MAX_RECURSION_DEPTH = 3;
     constexpr glm::vec3 zeroVector = glm::vec3(0,0,0);
     if(recursionDepth > MAX_RECURSION_DEPTH){
-        return Pixel{0,0, 0, 255};
+        return Pixel<>{0, 0, 0, 255};
     }
     std::vector<std::unique_ptr<IObject>>::const_iterator closestObject;
     float closestDistance = std::numeric_limits<float>::max();
@@ -26,7 +26,7 @@ Pixel Worker::getColorAtRay(const Ray &ray, uint recursionDepth, std::vector<std
                 continue;
             }
             const float distance = glm::length(ray.startPoint - collisionPoint);
-            if(distance < closestDistance){
+            if(distance < closestDistance && distance > 0.001f){
                 closestObject = object;
                 closestDistance = distance;
                 closestCollisionPoint = collisionPoint;
@@ -40,16 +40,17 @@ Pixel Worker::getColorAtRay(const Ray &ray, uint recursionDepth, std::vector<std
         //Check if object itself is light
         if((*closestObject)->isLight()){
             const float importance = - glm::dot(normal, ray.direction);
-            return (*closestObject)->getColor() * importance;
+            //Diffuse factor is used as a light intensivity there
+            return (*closestObject)->getColor() * importance * (*closestObject)->getDiffuseFactor();
         }
         //Get reflected vector in random position
         const glm::vec3 deviatedVector = RandGen::deviateVector(normal, 1.f);
         const Ray newRay{closestCollisionPoint, deviatedVector};
         const Pixel resultPixel = getColorAtRay(newRay, recursionDepth + 1, closestObject);
-        const float importance = glm::dot(normal, deviatedVector);
+        const float importance = glm::abs(glm::dot(normal, deviatedVector));
         const auto objectColor = (*closestObject)->getColor();
-        const auto result = resultPixel * objectColor * importance;
+        const auto result = resultPixel * (objectColor * importance);
         return result;
     }
-    return Pixel{25, 25, 25, 255};
+    return Pixel<>{0, 0, 0, 255};
 }

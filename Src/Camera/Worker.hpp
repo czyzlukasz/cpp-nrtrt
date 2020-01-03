@@ -15,7 +15,7 @@
 #include <iostream>
 #include <variant>
 
-constexpr uint spp = 256;
+constexpr uint spp = 64;
 
 struct SuperPixel{
     float r = 0, g = 0, b = 0;
@@ -34,18 +34,18 @@ struct Worker {
         // std::random_shuffle(raysToProcess.begin(), raysToProcess.end());
     }
 
-    void processRays(std::array<std::array<Pixel, spp>, 160000>& container){
+    void processRays(std::array<std::vector<Pixel<>>, 160000>& container){
         while(!raysToProcess.empty()){
             const auto& rayToProcess = raysToProcess.back();
             for(uint idx = 0; idx < spp; ++idx) {
-                container.at(rayToProcess.second).at(idx) = getColorAtRay(rayToProcess.first);
+                container.at(rayToProcess.second).push_back(getColorAtRay(rayToProcess.first));
             }
             raysToProcess.pop_back();
         }
     }
 
 private:
-    [[nodiscard]] Pixel getColorAtRay(const Ray &ray, uint recursionDepth = 0, std::vector<std::unique_ptr<IObject>>::const_iterator parent = std::vector<std::unique_ptr<IObject>>::const_iterator()) const;
+    [[nodiscard]] Pixel<> getColorAtRay(const Ray &ray, uint recursionDepth = 0, std::vector<std::unique_ptr<IObject>>::const_iterator parent = std::vector<std::unique_ptr<IObject>>::const_iterator()) const;
 
     [[nodiscard]] inline glm::vec3 getReflectionVector(const auto& objectPtr, const glm::vec3& collisionPoint, const Ray& ray) const{
         return ray.direction - 2.f * glm::dot(objectPtr->normalAtPoint(collisionPoint), ray.direction) * objectPtr->normalAtPoint(collisionPoint);
@@ -53,7 +53,6 @@ private:
 
     //World is read-only
     const World& world;
-    std::unordered_multimap<uint, Pixel> processedPixels;
     std::vector<std::pair<Ray, uint>> raysToProcess;
 };
 

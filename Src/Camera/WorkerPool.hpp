@@ -32,7 +32,7 @@ struct WorkerPool {
         }
     }
 
-    void startProcessing(std::array<std::array<Pixel, SAMPLES_PER_PIXEL>, NUM_OF_PIXELS>& pixelArray){
+    void startProcessing(std::array<std::vector<Pixel<>>, NUM_OF_PIXELS>& pixelArray){
         std::vector<std::thread> threadArray;
         for(uint idx = 0; idx < NUM_OF_WORKER_THREADS; ++idx){
             threadArray.emplace_back(&Worker::processRays, &workerArray.at(idx), std::ref(pixelArray));
