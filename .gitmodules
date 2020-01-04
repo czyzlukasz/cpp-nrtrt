@@ -1,6 +1,3 @@
-[submodule "Uts/googletest"]
-	path = Uts/googletest
-	url = https://github.com/google/googletest.git
 [submodule "Src/glm"]
 	path = Src/glm
 	url = https://github.com/g-truc/glm.git
