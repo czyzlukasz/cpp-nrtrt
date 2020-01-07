@@ -41,7 +41,7 @@ Pixel<> Worker::getColorAtRay(const Ray &ray, uint recursionDepth, std::vector<s
         if((*closestObject)->isLight()){
             const float importance = - glm::dot(normal, ray.direction);
             //Diffuse factor is used as a light intensivity there
-            return (*closestObject)->getColor() * importance * (*closestObject)->getDiffuseFactor();
+            return (*closestObject)->getColor() * (importance * (*closestObject)->getDiffuseFactor());
         }
         //Get reflected vector in random position
         const glm::vec3 deviatedVector = RandGen::deviateVector(normal, 1.f);

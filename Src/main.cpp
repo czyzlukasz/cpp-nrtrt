@@ -43,7 +43,7 @@ int main(){
             true
     ));
     camera.getWorld().addObject(std::make_unique<Sphere>(
-            glm::vec3(.5f,-.85f,-3.5),
+            glm::vec3(.5f,-.85f,-3.3),
             0.1f,
             Pixel<>{250,120,120, 255},
             1.f
@@ -52,7 +52,7 @@ int main(){
             glm::vec3(-2, -1, -4),
             glm::vec3(0, -1, -4),
             glm::vec3(-1, 1, -4),
-            Pixel<>{255, 255, 255, 255},
+            Pixel<>{15, 255, 20, 255},
             5.5f,
             true
     ));

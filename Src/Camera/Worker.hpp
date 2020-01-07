@@ -14,8 +14,10 @@
 #include <algorithm>
 #include <iostream>
 #include <variant>
+#include <RandGen.hpp>
 
-constexpr uint spp = 64;
+
+constexpr uint spp = 500;
 
 struct SuperPixel{
     float r = 0, g = 0, b = 0;
@@ -34,11 +36,12 @@ struct Worker {
         // std::random_shuffle(raysToProcess.begin(), raysToProcess.end());
     }
 
-    void processRays(std::array<std::vector<Pixel<>>, 160000>& container){
+    void processRays(std::array<AveragePixel, 160000>& container){
         while(!raysToProcess.empty()){
             const auto& rayToProcess = raysToProcess.back();
             for(uint idx = 0; idx < spp; ++idx) {
-                container.at(rayToProcess.second).push_back(getColorAtRay(rayToProcess.first));
+                const Ray ray{rayToProcess.first.startPoint, RandGen::deviateVector(rayToProcess.first.direction, 0.0005f)};
+                container.at(rayToProcess.second).addPixel(getColorAtRay(ray));
             }
             raysToProcess.pop_back();
         }

@@ -20,12 +20,12 @@
 using uint = unsigned int;
 
 
-template<uint WIDTH, uint HEIGHT, uint FOV, uint NUM_OF_WORKER_THREADS = 4, uint SAMPLES_PER_PIXEL = spp, typename vec3=glm::dvec3>
+template<uint WIDTH, uint HEIGHT, uint FOV, uint NUM_OF_WORKER_THREADS = 8, uint SAMPLES_PER_PIXEL = spp, typename vec3=glm::dvec3>
 struct Camera {
     Camera() : 
         window(sf::VideoMode(WIDTH, HEIGHT), "cpp-nrtrt"), 
         workerPool(world),
-        pixelBuffer(std::make_unique<std::array<std::vector<Pixel<>>, WIDTH * HEIGHT>>()){
+        pixelBuffer(std::make_unique<std::array<AveragePixel, WIDTH * HEIGHT>>()){
         window.setFramerateLimit(30);
         displayThread = std::thread([&]() {
             sf::Event event;
@@ -77,23 +77,8 @@ private:
         sf::Texture texture;
         texture.create(WIDTH, HEIGHT);
         sf::Sprite sprite(texture);
-        static auto accumulatePixels = [&](const uint index){
-            float r = 0, g = 0, b = 0;
-            for(auto& pixel : pixelBuffer->at(index)){
-                r += pixel.R;
-                g += pixel.G;
-                b += pixel.B;
-            }
-            const float bufferSize = pixelBuffer->at(index).size() ?: 1;
-            return Pixel<sf::Uint8>{
-                    static_cast<sf::Uint8>(std::min(r / bufferSize, static_cast<float>(std::numeric_limits<sf::Uint8>::max()))),
-                    static_cast<sf::Uint8>(std::min(g / bufferSize, static_cast<float>(std::numeric_limits<sf::Uint8>::max()))),
-                    static_cast<sf::Uint8>(std::min(b / bufferSize, static_cast<float>(std::numeric_limits<sf::Uint8>::max()))),
-                    255
-            };
-        };
         for(uint idx = 0; idx < WIDTH * HEIGHT; ++idx){
-            imageBuffer.at(idx) = accumulatePixels(idx);
+            imageBuffer.at(idx) = pixelBuffer->at(idx).getPixel();
         }
         texture.update(reinterpret_cast<sf::Uint8*>(&imageBuffer[0]));
         window.draw(sprite);
@@ -104,7 +89,7 @@ private:
     sf::RenderWindow window;
     std::array<Pixel<sf::Uint8>, WIDTH * HEIGHT> imageBuffer;
     //TODO: changet vector to array of size SPP
-    std::unique_ptr<std::array<std::vector<Pixel<>>, WIDTH * HEIGHT>> pixelBuffer;
+    std::unique_ptr<std::array<AveragePixel, WIDTH * HEIGHT>> pixelBuffer;
     std::thread displayThread;
     World world;
     WorkerPool<NUM_OF_WORKER_THREADS, WIDTH * HEIGHT, SAMPLES_PER_PIXEL> workerPool;
