@@ -10,15 +10,23 @@ struct TriangleTest : public ::testing::Test{
     TriangleTest() : t(glm::vec3(10, 14, 15),
                        glm::vec3(10, 10, 10),
                        glm::vec3(10, 10, 19),
-                       Pixel(),
+                       Pixel<>(),
                        0.5f),
+                    invertT(glm::vec3(2, 0, -2),
+                            glm::vec3(0, 0, -2),
+                            glm::vec3(1, 2, -2),
+                            Pixel<>(),
+                            1.f),
                     passRay(Ray{glm::vec3(1, 1, 1),glm::normalize(glm::vec3(1, 1.1, 1.4))}),
-                    failRay(Ray{glm::vec3(1, 1, 1),glm::normalize(glm::vec3(1, 2, 1.1))}){
+                    failRay(Ray{glm::vec3(1, 1, 1),glm::normalize(glm::vec3(1, 2, 1.1))}),
+                    invertRay(Ray{{0, 0, -3}, glm::normalize(glm::vec3(0.1, 0.1, 1))}){
     }
 protected:
     const Triangle t;
+    const Triangle invertT;
     const Ray passRay;
     const Ray failRay;
+    const Ray invertRay;
 };
 
 
@@ -55,4 +63,11 @@ TEST_F(TriangleTest, CollisionPointFail){
     EXPECT_FLOAT_EQ(collisionPoint.x, 0);
     EXPECT_FLOAT_EQ(collisionPoint.y, 0);
     EXPECT_FLOAT_EQ(collisionPoint.z, 0);
+}
+
+TEST_F(TriangleTest, CollisionPointInverted){
+    const glm::vec3 collisionPoint = invertT.collisionPoint(invertRay);
+    EXPECT_FLOAT_EQ(collisionPoint.x, 0.1f);
+    EXPECT_FLOAT_EQ(collisionPoint.y, 0.1f);
+    EXPECT_FLOAT_EQ(collisionPoint.z, -2.f);
 }

@@ -20,14 +20,16 @@
 using uint = unsigned int;
 
 
-template<uint WIDTH, uint HEIGHT, uint FOV, uint NUM_OF_WORKER_THREADS = 16, typename vec3=glm::dvec3>
+template<uint WIDTH, uint HEIGHT, uint FOV, uint NUM_OF_WORKER_THREADS = 8, uint SAMPLES_PER_PIXEL = spp, typename vec3=glm::dvec3>
 struct Camera {
     Camera() : 
         window(sf::VideoMode(WIDTH, HEIGHT), "cpp-nrtrt"), 
-        workerPool(world){
+        workerPool(world),
+        pixelBuffer(std::make_unique<std::array<AveragePixel, WIDTH * HEIGHT>>()){
         window.setFramerateLimit(30);
         displayThread = std::thread([&]() {
-            while(true) {
+            sf::Event event;
+            while(window.waitEvent(event)) {
                 refreshDisplayedImage();
                 std::this_thread::sleep_for(std::chrono_literals::operator ""ms(100));
             }
@@ -35,7 +37,7 @@ struct Camera {
         displayThread.detach();
     }
 
-    inline Pixel& getPixel(uint x, uint y){
+    inline Pixel<>& getPixel(uint x, uint y){
         return imageBuffer.at(x + y * WIDTH);
     }
 
@@ -66,7 +68,7 @@ struct Camera {
         //Optional step, just looks way cooler
         workerPool.shuffle();
         //TODO: just pass a imageBuffer to startProcessing()
-        workerPool.startProcessing(imageBuffer);
+        workerPool.startProcessing(*pixelBuffer);
     }
 
 private:
@@ -75,6 +77,9 @@ private:
         sf::Texture texture;
         texture.create(WIDTH, HEIGHT);
         sf::Sprite sprite(texture);
+        for(uint idx = 0; idx < WIDTH * HEIGHT; ++idx){
+            imageBuffer.at(idx) = pixelBuffer->at(idx).getPixel();
+        }
         texture.update(reinterpret_cast<sf::Uint8*>(&imageBuffer[0]));
         window.draw(sprite);
         window.display();
@@ -82,11 +87,12 @@ private:
     }
 
     sf::RenderWindow window;
-    std::array<Pixel, WIDTH * HEIGHT> imageBuffer;
+    std::array<Pixel<sf::Uint8>, WIDTH * HEIGHT> imageBuffer;
+    //TODO: changet vector to array of size SPP
+    std::unique_ptr<std::array<AveragePixel, WIDTH * HEIGHT>> pixelBuffer;
     std::thread displayThread;
     World world;
-    WorkerPool<NUM_OF_WORKER_THREADS, WIDTH * HEIGHT> workerPool;
+    WorkerPool<NUM_OF_WORKER_THREADS, WIDTH * HEIGHT, SAMPLES_PER_PIXEL> workerPool;
 };
-
 
 #endif //CPP_NRTRT_CAMERA_HPP

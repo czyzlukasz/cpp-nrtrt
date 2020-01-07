@@ -11,7 +11,8 @@
 
 
 struct Triangle : public IObject{
-    Triangle(const glm::vec3& a, const glm::vec3& b, const glm::vec3& c, Pixel color, float diffuseFactor) : a(a), b(b), c(c), color(color), diffuseFactor(diffuseFactor){
+    Triangle(const glm::vec3& a, const glm::vec3& b, const glm::vec3& c, Pixel<> color, float diffuseFactor, bool light = false)
+        : a(a), b(b), c(c), color(color), diffuseFactor(diffuseFactor), light(light){
         const glm::vec3 sideA  = a - c;
         const glm::vec3 sideB  = b - c;
         //Calculating normal of triangle requires cross product of its two sides
@@ -47,9 +48,19 @@ struct Triangle : public IObject{
     }
 
     [[nodiscard]] inline glm::vec3 collisionPoint(const Ray& ray) const final{
-        float d = std::abs(glm::dot(normal, a));
-        float t = - ((glm::dot(ray.startPoint, normal) + d) / glm::dot(ray.direction, normal));
-        //TODO: possible improvement - branch at return
+        // float d = std::abs(glm::dot(normal, a));
+        // float t = - ((glm::dot(ray.startPoint, normal) + d) / glm::dot(ray.direction, normal));
+        // //TODO: possible improvement - branch at return
+        // if(t < 0.f){
+        //     return glm::vec3();
+        // }
+        // const glm::vec3 point = ray.getPoint(t);
+        // return checkIfInsideTriangle(point) ? point : glm::vec3();
+
+        const float t = glm::dot(normal, a - ray.startPoint) / glm::dot(normal, ray.direction);
+        if(t < 0.f){
+            return glm::vec3();
+        }
         const glm::vec3 point = ray.getPoint(t);
         return checkIfInsideTriangle(point) ? point : glm::vec3();
     }
@@ -58,11 +69,15 @@ struct Triangle : public IObject{
         return normal;
     }
 
-    [[nodiscard]] Pixel getColor() const final{
+    [[nodiscard]] inline Pixel<> getColor() const final{
         return color;
     }
-    [[nodiscard]] float getDiffuseFactor() const final{
+    [[nodiscard]] inline float getDiffuseFactor() const final{
         return diffuseFactor;
+    }
+
+    [[nodiscard]] inline bool isLight() const final{
+        return light;
     }
 private:
 
@@ -74,10 +89,11 @@ private:
     }
 
     const glm::vec3 a, b, c;
-    const Pixel color;
+    const Pixel<> color;
     glm::vec3 normal;
     glm::vec3 center;
     float radius, diffuseFactor;
+    const bool light;
 };
 
 

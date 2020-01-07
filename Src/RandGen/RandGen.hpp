@@ -14,19 +14,8 @@
 #include <glm/gtx/vector_angle.hpp>
 
 struct RandGen {
-    static void initRandGen(){
-        for(; itemsInArray < stack.size(); ++itemsInArray){
-            stack.at(itemsInArray) = dist(engine);
-        }
-    }
-
     static inline float getRandom(){
         return dist(engine);
-    //    static constexpr size_t halfSize = stack.size() / 2;
-//        if(itemsInArray < halfSize){
-//            replenishStack();
-//        }
-    //    return stack.at(--itemsInArray);
     }
 
     static inline glm::vec3 deviateVector(glm::vec3 vector, float factor){
@@ -46,10 +35,15 @@ struct RandGen {
 
         const float sqr = std::sqrt(1 - std::pow(z, 2));
         //std::cout << sqr << std::endl;
-        const glm::vec3 randomVector(sqr * cosPhi, sqr * sinPhi, z);
-        //std::cout << randomVector.x << " " << randomVector.y << " " << randomVector.z << std::endl;
-        
-        constexpr glm::vec3 zVector(0.f, 0.f, 1.f);
+        glm::vec3 randomVector, zVector;
+        if(vector.z != 1.f){
+            randomVector = glm::vec3(sqr * cosPhi, sqr * sinPhi, z);   
+            zVector = glm::vec3(0, 0, 1);
+        }
+        else{
+            randomVector = glm::vec3(z, sqr * cosPhi, sqr * sinPhi);   
+            zVector = glm::vec3(1, 0, 0);
+        }
         const glm::vec3 crossProduct = glm::cross(zVector, vector);
         //std::cout << crossProduct.x << " " << crossProduct.y << " " << crossProduct.z << std::endl;
         const float angleToRotate = glm::angle(zVector, vector);
