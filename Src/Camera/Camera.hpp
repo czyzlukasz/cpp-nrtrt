@@ -20,7 +20,7 @@
 using uint = unsigned int;
 
 
-template<uint WIDTH, uint HEIGHT, uint FOV, uint NUM_OF_WORKER_THREADS = 8, uint SAMPLES_PER_PIXEL = spp, typename vec3=glm::dvec3>
+template<uint WIDTH, uint HEIGHT, uint FOV, uint FOCAL_POINT_1000 = 2000, uint SENSOR_WIDTH_1000 = 20, uint NUM_OF_WORKER_THREADS = 8, uint SAMPLES_PER_PIXEL = spp, typename vec3=glm::dvec3>
 struct Camera {
     Camera() : 
         window(sf::VideoMode(WIDTH, HEIGHT), "cpp-nrtrt"), 
@@ -42,13 +42,30 @@ struct Camera {
     }
 
     //Returns the direction of given pixel by calculating deviation from "front"
-    inline glm::vec3 getDirection(int x, int y) const{
+    inline Ray getRay(int x, int y) const{
         constexpr float RANGE = std::tan(FOV / 2.f);
         constexpr float MOVE_PER_X = 2.f * RANGE / WIDTH;
         constexpr float MOVE_PER_Y = - 2.f * RANGE / HEIGHT;
         const float deviationFromCenterX = static_cast<float>(x) - WIDTH / 2.f;
         const float deviationFromCenterY = static_cast<float>(y) - HEIGHT / 2.f;
-        return glm::normalize(glm::vec3(deviationFromCenterX * MOVE_PER_X, deviationFromCenterY * MOVE_PER_Y,-1.f));
+        const glm::vec3 generalDirection = glm::normalize(glm::vec3(deviationFromCenterX * MOVE_PER_X, deviationFromCenterY * MOVE_PER_Y,-1.f));
+
+        constexpr float FOCAL_POINT = FOCAL_POINT_1000 / 1000.f;
+        constexpr float SENSOR_WIDTH = SENSOR_WIDTH_1000 / 1000.f;
+        constexpr float PIXEL_WIDTH = SENSOR_WIDTH / WIDTH;
+        const float relPixelPosX = PIXEL_WIDTH * (RandGen::getRandom() * 2.f - 1);
+        const float relPixelPosY = PIXEL_WIDTH * (RandGen::getRandom() * 2.f - 1);
+        const float absPixelPosX = static_cast<float>(x) * PIXEL_WIDTH - SENSOR_WIDTH / 2.f + relPixelPosX;
+        const float absPixelPosY = static_cast<float>(y) * PIXEL_WIDTH - SENSOR_WIDTH / 2.f + relPixelPosY;
+        const glm::vec3 position = glm::vec3(absPixelPosX, absPixelPosY, 0.f);
+
+        constexpr float MAX_ANGLE = std::atan((PIXEL_WIDTH / 2.) / FOCAL_POINT);
+        const glm::vec3 directionToFocalPoint(-absPixelPosX, -absPixelPosY, -1.f);
+        constexpr glm::vec3 yVector(0, 1, 0);
+        const glm::vec3 crossProduct = glm::cross(yVector, generalDirection);
+        const float angle = glm::angle(generalDirection, directionToFocalPoint);
+        const glm::vec3 direction = glm::normalize(glm::rotate(directionToFocalPoint, angle, crossProduct));
+        return Ray{position, direction};
     }
 
     inline World& getWorld(){
@@ -61,7 +78,7 @@ struct Camera {
         //To start the render, Camera needs to split the work between multiple worker threads
         for(uint y = 0; y < HEIGHT; ++y){
             for(uint x = 0; x < WIDTH; ++x){
-                Ray ray{glm::vec3(), getDirection(x, y)};
+                const Ray ray = getRay(x, y);
                 workerPool.initWorkerPool(ray, x + y * WIDTH);
             }
         }

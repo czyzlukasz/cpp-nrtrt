@@ -17,7 +17,7 @@
 #include <RandGen.hpp>
 
 
-constexpr uint spp = 500;
+constexpr uint spp = 50;
 
 struct SuperPixel{
     float r = 0, g = 0, b = 0;
