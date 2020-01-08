@@ -57,7 +57,7 @@ struct AveragePixel{
         if(samples == 0){
             return Pixel<sf::Uint8>{0,0,0,255};
         }
-        const auto result = cumulatedPixel / samples;
+        const auto result = cumulatedPixel / samples * 5.f;
         return Pixel<sf::Uint8>{static_cast<sf::Uint8>(result.R),
                                 static_cast<sf::Uint8>(result.G),
                                 static_cast<sf::Uint8>(result.B),

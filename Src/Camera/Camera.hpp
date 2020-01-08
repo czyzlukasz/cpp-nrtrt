@@ -49,7 +49,10 @@ struct Camera {
         const float deviationFromCenterX = static_cast<float>(x) - WIDTH / 2.f;
         const float deviationFromCenterY = static_cast<float>(y) - HEIGHT / 2.f;
         const glm::vec3 generalDirection = glm::normalize(glm::vec3(deviationFromCenterX * MOVE_PER_X, deviationFromCenterY * MOVE_PER_Y,-1.f));
-        return Ray{{}, generalDirection};
+        constexpr float PIXEL_WIDTH = SENSOR_WIDTH_1000 / 1000.f / WIDTH;
+        const float pixelPosX = PIXEL_WIDTH * (RandGen::getRandom() * 2.f - 1.f);
+        const float pixelPosY = PIXEL_WIDTH * (RandGen::getRandom() * 2.f - 1.f);
+        return Ray{{pixelPosX, pixelPosY, 0.f}, generalDirection};
         // constexpr float FOCAL_POINT = FOCAL_POINT_1000 / 1000.f;
         // constexpr float SENSOR_WIDTH = SENSOR_WIDTH_1000 / 1000.f;
         // constexpr float PIXEL_WIDTH = SENSOR_WIDTH / WIDTH;

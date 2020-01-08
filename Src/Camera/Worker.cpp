@@ -45,9 +45,6 @@ Pixel<> Worker::getColorAtRay(const Ray &ray, uint recursionDepth, std::vector<s
             return (*closestObject)->getColor() * (importance * (*closestObject)->getDiffuseFactor());
         }
         if(const TransparentSphere* transparent = dynamic_cast<TransparentSphere*>((*closestObject).get())){
-            if(recursionDepth == 0){
-                int x =0;
-            }
             const Ray outputRay = transparent->outputRay(closestCollisionPoint, ray.direction);
             return getColorAtRay(outputRay, recursionDepth + 1, closestObject);
         }

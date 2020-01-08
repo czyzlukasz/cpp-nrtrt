@@ -20,7 +20,7 @@ int main(){
             glm::vec3(-1, -1, -5),
             glm::vec3(1, -1, -5),
             glm::vec3(0, 1, -5),
-            Pixel<>{100, 200, 200, 255},
+            Pixel<>{250, 50, 50, 255},
             1.f
     ));
     camera.getWorld().addObject(std::make_unique<Triangle>(
@@ -38,10 +38,10 @@ int main(){
             1.f
     ));
     camera.getWorld().addObject(std::make_unique<Sphere>(
-            glm::vec3(.5f,-.5f,-3.5),
+            glm::vec3(.6f,-.5f,-3.5),
             0.25f,
             Pixel<>{255, 255, 255, 255},
-            9.f,
+            10.9f,
             true
     ));
     camera.getWorld().addObject(std::make_unique<Sphere>(
@@ -55,7 +55,7 @@ int main(){
             glm::vec3(0, -1, -4),
             glm::vec3(-1, 1, -4),
             Pixel<>{15, 255, 20, 255},
-            5.5f,
+            0.5f,
             true
     ));
     camera.getWorld().addObject(std::make_unique<Triangle>(
@@ -63,7 +63,7 @@ int main(){
             glm::vec3(5000, 1, 10),
             glm::vec3(0, 5000, 10),
             Pixel<>{255, 255, 255, 255},
-            1.f,
+            0.1f,
             true
     ));
     camera.getWorld().addObject(std::make_unique<Triangle>(
@@ -75,8 +75,8 @@ int main(){
     ));
     
     camera.getWorld().addObject(std::make_unique<TransparentSphere>(
-            glm::vec3(-0.1f, -0.5f, -2.f),
-            0.15f,
+            glm::vec3(0.2f, 0, -2.f),
+            0.35f,
             Pixel<>{255, 255, 255, 255},
             1.5f
     ));
