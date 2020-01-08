@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 project(cpp-nrtrt CXX)
 
 set(CMAKE_CXX_STANDARD 17)
-# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
 
 include_directories(Src)
 include_directories(Src/glm)
@@ -31,5 +31,5 @@ include_directories(Uts)
 include(GoogleTest)
 add_subdirectory(Uts/googletest)
 
-add_executable(runUnitTests Uts/RayTest.cpp Uts/TriangleTest.cpp Uts/RandGenTest.cpp Uts/PixelTest.cpp Uts/WorkerTest.cpp Uts/SphereTest.cpp)
+add_executable(runUnitTests Uts/RayTest.cpp Uts/TriangleTest.cpp Uts/RandGenTest.cpp Uts/PixelTest.cpp Uts/WorkerTest.cpp Uts/SphereTest.cpp Uts/TransparentSphereTest.cpp)
 target_link_libraries(runUnitTests gtest gtest_main RandGen Worker World)

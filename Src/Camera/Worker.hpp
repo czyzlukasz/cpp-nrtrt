@@ -39,17 +39,15 @@ struct Worker {
     void processRays(std::array<AveragePixel, 160000>& container){
         while(!raysToProcess.empty()){
             const auto& rayToProcess = raysToProcess.back();
-            for(uint idx = 0; idx < spp; ++idx) {
-                const Ray ray{rayToProcess.first.startPoint, RandGen::deviateVector(rayToProcess.first.direction, 0.0005f)};
-                container.at(rayToProcess.second).addPixel(getColorAtRay(ray));
-            }
+            container.at(rayToProcess.second).addPixel(getColorAtRay(rayToProcess.first));
             raysToProcess.pop_back();
         }
     }
 
-private:
+//TODO: public just for tesing
     [[nodiscard]] Pixel<> getColorAtRay(const Ray &ray, uint recursionDepth = 0, std::vector<std::unique_ptr<IObject>>::const_iterator parent = std::vector<std::unique_ptr<IObject>>::const_iterator()) const;
 
+private:
     [[nodiscard]] inline glm::vec3 getReflectionVector(const auto& objectPtr, const glm::vec3& collisionPoint, const Ray& ray) const{
         return ray.direction - 2.f * glm::dot(objectPtr->normalAtPoint(collisionPoint), ray.direction) * objectPtr->normalAtPoint(collisionPoint);
     }

@@ -15,10 +15,10 @@ struct Ray{
     inline glm::vec3 getPoint(float t) const{
         return startPoint + direction * t;
     }
+    
+    Ray() = default;
     Ray(const Ray& other) = default;
-    Ray(Ray&& other) noexcept = default;
     Ray& operator=(const Ray& other) = default;
-    Ray& operator=(Ray&& other) noexcept = default;
 };
 
 #endif //CPP_NRTRT_RAY_HPP

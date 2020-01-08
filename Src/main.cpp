@@ -4,6 +4,8 @@
 #include <Camera.hpp>
 #include <RandGen.hpp>
 #include <Sphere.hpp>
+#include <TransparentSphere.hpp>
+
 
 int main(){
     Camera<400, 400, 70> camera;
@@ -70,6 +72,13 @@ int main(){
             glm::vec3(1.5, 1, -3),
             Pixel<>{255, 200, 200, 255},
             5.5f
+    ));
+    
+    camera.getWorld().addObject(std::make_unique<TransparentSphere>(
+            glm::vec3(-0.1f, -0.5f, -2.f),
+            0.15f,
+            Pixel<>{255, 255, 255, 255},
+            1.5f
     ));
      while(true)
     {

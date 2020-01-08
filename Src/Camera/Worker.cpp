@@ -6,6 +6,7 @@
 #include <Pixel.hpp>
 #include <limits>
 #include <RandGen.hpp>
+#include <TransparentSphere.hpp>
 
 
 Pixel<> Worker::getColorAtRay(const Ray &ray, uint recursionDepth, std::vector<std::unique_ptr<IObject>>::const_iterator parent) const {
@@ -43,14 +44,23 @@ Pixel<> Worker::getColorAtRay(const Ray &ray, uint recursionDepth, std::vector<s
             //Diffuse factor is used as a light intensivity there
             return (*closestObject)->getColor() * (importance * (*closestObject)->getDiffuseFactor());
         }
-        //Get reflected vector in random position
-        const glm::vec3 deviatedVector = RandGen::deviateVector(normal, 1.f);
-        const Ray newRay{closestCollisionPoint, deviatedVector};
-        const Pixel resultPixel = getColorAtRay(newRay, recursionDepth + 1, closestObject);
-        const float importance = glm::abs(glm::dot(normal, deviatedVector));
-        const auto objectColor = (*closestObject)->getColor();
-        const auto result = resultPixel * (objectColor * importance);
-        return result;
+        if(const TransparentSphere* transparent = dynamic_cast<TransparentSphere*>((*closestObject).get())){
+            if(recursionDepth == 0){
+                int x =0;
+            }
+            const Ray outputRay = transparent->outputRay(closestCollisionPoint, ray.direction);
+            return getColorAtRay(outputRay, recursionDepth + 1, closestObject);
+        }
+        else{
+            //Get reflected vector in random position
+            const glm::vec3 deviatedVector = RandGen::deviateVector(normal, 1.f);
+            const Ray newRay{closestCollisionPoint, deviatedVector};
+            const Pixel resultPixel = getColorAtRay(newRay, recursionDepth + 1, closestObject);
+            const float importance = glm::abs(glm::dot(normal, deviatedVector));
+            const auto objectColor = (*closestObject)->getColor();
+            const auto result = resultPixel * (objectColor * importance);
+            return result;
+        }
     }
     return Pixel<>{0, 0, 0, 255};
 }

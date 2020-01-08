@@ -19,6 +19,9 @@ struct WorkerPool {
 
     inline void initWorkerPool(const Ray& ray, uint pixelId){
         workerArray.at(currentWorkerSelected).addRay(ray, pixelId);
+    }
+
+    inline void changeWorker(){
         //Increment current worker ID
         ++currentWorkerSelected;
         if(!(currentWorkerSelected % NUM_OF_WORKER_THREADS)){

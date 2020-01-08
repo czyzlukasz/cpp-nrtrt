@@ -30,6 +30,14 @@ TEST_F(SphereTest, TestCollisionFail){
     EXPECT_EQ(result.z, 0.f);
 }
 
+TEST_F(SphereTest, TestCollisionFromCenter){
+    const Ray ray{{10, 10, 8}, {0, 0, 1}};
+    const glm::vec3 result = sphere.collisionPoint(ray);
+    EXPECT_FLOAT_EQ(result.x, 10.f);
+    EXPECT_FLOAT_EQ(result.y, 10.f);
+    EXPECT_FLOAT_EQ(result.z, 15.f);
+}
+
 TEST_F(SphereTest, CheckCollsionPoint){
     const glm::vec3 result = sphere.collisionPoint(passRay);
     EXPECT_FLOAT_EQ(result.x, 7.1132493f);

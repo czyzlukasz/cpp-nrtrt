@@ -41,8 +41,20 @@ struct Sphere : public IObject{
         const float c = glm::dot(distance, distance) - radius * radius;
         //b^2 - 4ac
         const float discriminant = b * b - 4 * doubleDirection * c;
-        const float t = (-b - std::sqrt(discriminant)) / (2.f * doubleDirection);
-        return t > 0.f ? ray.getPoint(t) : glm::vec3();
+        const float t1 = (-b - std::sqrt(discriminant)) / (2.f * doubleDirection);
+        const float t2 = (-b + std::sqrt(discriminant)) / (2.f * doubleDirection);
+        if(t1 > 0.f && t2 <= 0.f){
+            return ray.getPoint(t1);
+        }
+        else if(t1 <= 0.f && t2 > 0.f){
+            return ray.getPoint(t2);
+        }
+        else if(t1 > 0.f && t2 > 0.f){
+            return ray.getPoint(std::min(t1, t2));
+        }
+        else{
+            return glm::vec3();
+        }
     }
 
     [[nodiscard]] inline glm::vec3 normalAtPoint(const glm::vec3& point) const final{
